@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/api";
 
+import Auth from './components/Auth'
+
 function App() {
     const [user, setUser] = useState(null);
 
@@ -22,6 +24,7 @@ function App() {
 
     return (
         <div className="min-w-full min-h-screen flex items-center justify-center bg-gray-200">
+          {!user && <Auth />}
             {/* {!user ? <Auth /> : <Home user={user} />} */}
         </div>
     );
