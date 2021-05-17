@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/api";
 
 import Auth from './components/Auth'
+import Home from './components/Home'
 
 function App() {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         const session = supabase.auth.session();
+        console.log(session)
         setUser(session?.user ?? null);
 
         const { data: authListener } = supabase.auth.onAuthStateChange(
@@ -24,7 +26,7 @@ function App() {
 
     return (
         <div className="min-w-full min-h-screen flex items-center justify-center bg-gray-200">
-          {!user && <Auth />}
+          {!user ? <Auth /> : <Home user={user} /> }
             {/* {!user ? <Auth /> : <Home user={user} />} */}
         </div>
     );
