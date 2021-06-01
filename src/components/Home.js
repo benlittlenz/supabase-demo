@@ -26,12 +26,14 @@ const Home = ({ user }) => {
     }, []);
 
     const fetchTodos = async () => {
+        console.time('fetch')
         let { data: todos, error } = await supabase
             .from("todos")
             .select("*")
             .order("id", { ascending: false });
         if (error) console.log("error", error);
         else setTodos(todos);
+        console.timeEnd('fetch')
     };
 
     const deleteTodo = async (id) => {
@@ -54,7 +56,7 @@ const Home = ({ user }) => {
                 console.log(i)
                 let { data: todo, error } = await supabase
                 .from("todos")
-                .insert({ task, user_id: user.id })
+                .insert({ task, blah: 88, user_id: user.id })
                 .single();
 
                 if (error) setError(error.message);

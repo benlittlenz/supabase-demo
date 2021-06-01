@@ -3,6 +3,8 @@ import { supabase } from "./lib/api";
 
 import Auth from './components/Auth'
 import Home from './components/Home'
+import Table from './components/Demo'
+import DrawerForm from './components/Table'
 
 function App() {
     const [user, setUser] = useState(null);
@@ -25,9 +27,8 @@ function App() {
     }, [user]);
 
     return (
-        <div className="min-w-full min-h-screen flex items-center justify-center bg-gray-200">
-          {!user ? <Auth /> : <Home user={user} /> }
-            {/* {!user ? <Auth /> : <Home user={user} />} */}
+        <div className="w-5/6 mx-auto">
+            {!user ? <Auth /> : <Table />}
         </div>
     );
 }
