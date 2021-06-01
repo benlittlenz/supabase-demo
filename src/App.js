@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "./lib/api";
 
 import Auth from './components/Auth'
-import Home from './components/Home'
-import Table from './components/Demo'
-import DrawerForm from './components/Table'
+//import Home from './components/Home'
+import TableDemo from './components/Table'
+//import DrawerForm from './components/Table'
 
 function App() {
     const [user, setUser] = useState(null);
@@ -28,7 +28,7 @@ function App() {
 
     return (
         <div className="w-5/6 mx-auto">
-            {!user ? <Auth /> : <Table />}
+            {!user ? <Auth /> : <TableDemo />}
         </div>
     );
 }

@@ -1,179 +1,95 @@
-import React from 'react';
-import { Table, Input, Button, Space } from 'antd';
-import Highlighter from 'react-highlight-words';
-import { SearchOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Joe Black',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Jim Green',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
-  },
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Joe Black',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Jim Green',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
-  },
-];
+import React, { useState, useEffect } from "react";
+import { Table, Button } from "antd";
+import { supabase } from "../lib/api";
+import "antd/dist/antd.css";
 
-export default class TableDemo extends React.Component {
-  state = {
-    searchText: '',
-    searchedColumn: '',
-    selectedRowKeys: [],
+export default function TableDemo() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  useEffect(() => {
+    fetchPosts()
+  }, []);
+
+  const fetchPosts = async () => {
+    let { data, error } = await supabase
+      .from("posts")
+      .select(`
+              id, added, content, approved,
+              users (name)
+        `)
+
+    //.order('id', { ascending: true })
+    setPosts(data)
+    console.log(posts)
+    if (error) console.log("error", error);
+    setIsLoading(false);
   };
 
-  getColumnSearchProps = dataIndex => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={node => {
-            this.searchInput = node;
-          }}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button onClick={() => this.handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              this.setState({
-                searchText: selectedKeys[0],
-                searchedColumn: dataIndex,
-              });
-            }}
-          >
-            Filter
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '',
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => this.searchInput.select(), 100);
-      }
+  const columns = [
+    {
+      title: "id",
+      dataIndex: "id",
+      width: "20%"
     },
-    render: text =>
-      this.state.searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-          searchWords={[this.state.searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ''}
-        />
-      ) : (
-        text
-      ),
-  });
+    {
+      title: "Added",
+      dataIndex: "added",
+    },
+    {
+      title: "Content",
+      dataIndex: "content",
+      width: "20%"
+    },
+    {
+      title: "User",
+      dataIndex: "users.name",
+      width: "20%"
+    },
+    {
+      title: "Approved",
+      dataIndex: "approved",
+      width: "20%"
+    }
+  ];
 
-  handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    this.setState({
-      searchText: selectedKeys[0],
-      searchedColumn: dataIndex,
-    });
+  const rowSelection = {
+    onChange: rows => {
+      console.log("ROWS: ", rows)
+      setSelectedRows(rows)
+    },
   };
 
-  handleReset = clearFilters => {
-    clearFilters();
-    this.setState({ searchText: '' });
-  };
-
-  onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  };
-
-  render() {
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
-
-    const columns = [
-      {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-        width: '30%',
-        ...this.getColumnSearchProps('name'),
-      },
-      {
-        title: 'Age',
-        dataIndex: 'age',
-        key: 'age',
-        width: '20%',
-        ...this.getColumnSearchProps('age'),
-      },
-      {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
-        ...this.getColumnSearchProps('address'),
-        sorter: (a, b) => a.address.length - b.address.length,
-        sortDirections: ['descend', 'ascend'],
-      },
-    ];
-    return <Table rowSelection={rowSelection} columns={columns} dataSource={data} />;
+  const updateRecords = async () => {
+    console.time('update')
+    for(let i = 0; i < selectedRows.length; i++) {
+      console.log(i)
+      const { data, error } = await supabase
+        .from('posts')
+        .update({ approved: 'Yes' })
+        .match({ id: selectedRows[i]})
+    }
+    console.timeEnd('update')
   }
-}
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <Button type="primary"
+          onClick={updateRecords}>
+          Reload
+          </Button>
+      </div>
+      <Table
+        rowSelection={rowSelection}
+        pagination={{ pageSize: 50 }}
+        size={"small"}
+        columns={columns}
+        dataSource={posts}
+        loading={isLoading}
+        rowKey="id"
+      />
+    </div>
+  );
+};
