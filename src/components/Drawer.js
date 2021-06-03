@@ -3,26 +3,19 @@ import React, { useState } from 'react';
 import { Drawer, Form, Button, Col, Row, Input, Select, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
+import InputSelect from './Form/Select'
+
 const { Option } = Select;
 
-export default function DrawerForm() {
-  const [visible, setVisible] = useState(true)
-
-  const showDrawer = () => {
-    setVisible(true)
-  };
-
+export default function DrawerForm({visible, setVisible}) {
   const onClose = () => {
     setVisible(false)
   };
 
   return (
     <>
-      <Button type="primary" onClick={showDrawer}>
-        <PlusOutlined /> New account
-        </Button>
       <Drawer
-        title="Create a new account"
+        title="Create a new timesheet"
         width={720}
         onClose={onClose}
         visible={visible}
@@ -50,7 +43,7 @@ export default function DrawerForm() {
                 label="Name"
                 rules={[{ required: true, message: 'Please enter user name' }]}
               >
-                <Input placeholder="Please enter user name" />
+                <InputSelect />
               </Form.Item>
             </Col>
             <Col span={12}>
