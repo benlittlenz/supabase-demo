@@ -6,9 +6,9 @@ import "antd/dist/antd.css";
 import Drawer from './Forms/Timesheet/Drawer';
 import Alert from './Alert';
 
-export default function TableDemo() {
+export default function Timesheet() {
   const [isLoading, setIsLoading] = useState(false);
-  const [timesheets, setTimesheets] = useState([]);
+  const [clients, setClients] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [showDrawer, setShowDrawer] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
@@ -24,13 +24,12 @@ export default function TableDemo() {
   const fetchTimesheets = async () => {
     setIsLoading(true)
     let { data, error } = await supabase
-      .from("timesheet")
+      .from("clients")
       .select(`
-              id, started_at, stopped_at, total_hours, approved,
-              users (id, name)
+              id, company, main_contact, main_contact_phone, main_contact_email
       `)
     //.order('id', { ascending: true })
-    setTimesheets(data)
+    setClients(data)
     console.log(data)
     if (error) console.log("error", error);
     setIsLoading(false);
@@ -73,27 +72,22 @@ export default function TableDemo() {
       width: "5%"
     },
     {
-      title: "User",
-      dataIndex: ['users', 'name'],
+      title: "Company",
+      dataIndex: "company",
       width: "20%"
     },
     {
-      title: "Started",
-      dataIndex: "started_at",
+      title: "Main Contact",
+      dataIndex: "main_contact",
     },
     {
-      title: "Finished",
-      dataIndex: "stopped_at",
+      title: "Main Contact",
+      dataIndex: "main_contact_phone",
       width: "20%"
     },
     {
-      title: "Total Hours",
-      dataIndex: "total_hours",
-      width: "20%"
-    },
-    {
-      title: "Approved",
-      dataIndex: "approved",
+      title: "Main Contact",
+      dataIndex: "main_contact_email",
       width: "20%"
     },
     {
@@ -117,15 +111,9 @@ export default function TableDemo() {
     <div>
       {message && <Alert type="success" message={message} />}
       <div className="flex justify-items-end" style={{ marginBottom: 16 }}>
-        <Button type="primary"
-          onClick={updateRecords}
-          loading={isApproving}
-        >
-          Approve
-        </Button>
-        <Button type="primary"
-          onClick={onOpen}>
-          Create Timesheet
+
+        <Button type="primary">
+          Create Client
         </Button>
       </div>
       <Table
@@ -133,16 +121,9 @@ export default function TableDemo() {
         pagination={{ pageSize: 50 }}
         size={"small"}
         columns={columns}
-        dataSource={timesheets}
+        dataSource={clients}
         loading={isLoading}
         rowKey="id"
-      />
-      <Drawer
-        visible={visible}
-        editOrCreate={editOrCreate}
-        setVisible={setVisible}
-        timesheet={timesheet}
-        setTimesheet={setTimesheet}
       />
     </div>
   );
