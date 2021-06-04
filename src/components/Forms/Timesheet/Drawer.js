@@ -1,21 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from "../../../lib/api";
 
 import { Drawer, Form, Button, Col, Row, Input, Select, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-import InputSelect from './Form/Select'
+import InputSelect from './Select'
+import Datetime from './Datetime'
 
 const { Option } = Select;
 
-export default function DrawerForm({visible, setVisible}) {
+export default function DrawerForm({ visible, editOrCreate, setVisible, timesheet = null, setTimesheet }) {
+  const [user, setUser] = useState(null);
+  const [start, setStart] = useState(null);
+  const [finish, setFinish] = useState(null);
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    console.log("Effect: ", timesheet)
+    if(timesheet) setData(timesheet);
+  }, [timesheet])
+
   const onClose = () => {
     setVisible(false)
   };
 
+  const onSubmit = async () => {
+    const { data, error } = await supabase
+      .from('timesheet')
+      .insert([
+        {
+          user_id: user,
+          started_at: start,
+          stopped_at: finish,
+          total_hours: 4,
+         }
+      ])
+      console.log(data)
+      console.log(error)
+  }
+
   return (
     <>
       <Drawer
-        title="Create a new timesheet"
+        title={editOrCreate === 'Edit' ? 'Edit Timesheet' : 'Create Timesheet'}
         width={720}
         onClose={onClose}
         visible={visible}
@@ -29,9 +56,9 @@ export default function DrawerForm({visible, setVisible}) {
             <Button onClick={onClose} style={{ marginRight: 8 }}>
               Cancel
               </Button>
-            <Button onClick={onClose} type="primary">
+            <Button onClick={onSubmit} type="primary">
               Submit
-              </Button>
+            </Button>
           </div>
         }
       >
@@ -43,47 +70,27 @@ export default function DrawerForm({visible, setVisible}) {
                 label="Name"
                 rules={[{ required: true, message: 'Please enter user name' }]}
               >
-                <InputSelect />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="url"
-                label="Url"
-                rules={[{ required: true, message: 'Please enter url' }]}
-              >
-                <Input
-                  style={{ width: '100%' }}
-                  addonBefore="http://"
-                  addonAfter=".com"
-                  placeholder="Please enter url"
-                />
+                <InputSelect setData={setUser} user={timesheet?.users} />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="owner"
-                label="Owner"
-                rules={[{ required: true, message: 'Please select an owner' }]}
+                name="start"
+                label="Start"
+                rules={[{ required: true, message: 'Please select a start date & time' }]}
               >
-                <Select placeholder="Please select an owner">
-                  <Option value="xiao">Xiaoxiao Fu</Option>
-                  <Option value="mao">Maomao Zhou</Option>
-                </Select>
+                <Datetime editOrCreate={editOrCreate} date={timesheet?.started_at} setData={setStart} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="type"
-                label="Type"
-                rules={[{ required: true, message: 'Please choose the type' }]}
+                name="finish"
+                label="Finish"
+                rules={[{ required: true, message: 'Please select a finish date & time' }]}
               >
-                <Select placeholder="Please choose the type">
-                  <Option value="private">Private</Option>
-                  <Option value="public">Public</Option>
-                </Select>
+                <Datetime date={timesheet?.stopped_at} setData={setFinish}/>
               </Form.Item>
             </Col>
           </Row>
