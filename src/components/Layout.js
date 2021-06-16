@@ -27,13 +27,19 @@ export default function DefaultLayout({ children }) {
           </Menu.Item>
 
           <Menu.Item key="2" icon={<DesktopOutlined />}>
-            Clients
+          <Link to="/">
+              Clients
+            </Link>
             </Menu.Item>
-          <Menu.Item key="2" icon={<DesktopOutlined />}>
-            Timesheets
+          <Menu.Item key="3" icon={<DesktopOutlined />}>
+          <Link to="/timesheets">
+              Jobs
+            </Link>
             </Menu.Item>
-          <Menu.Item key="2" icon={<DesktopOutlined />}>
-            Staff
+          <Menu.Item key="4" icon={<DesktopOutlined />}>
+          <Link to="/staff">
+              Staff
+            </Link>
           </Menu.Item>
         </Menu>
       </Sider>

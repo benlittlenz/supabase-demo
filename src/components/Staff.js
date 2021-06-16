@@ -3,32 +3,26 @@ import { Table, Button, Typography } from "antd";
 import { supabase } from "../lib/api";
 import "antd/dist/antd.css";
 
-import Drawer from './Forms/Client/Drawer';
-import Alert from './Alert';
 
 export default function Timesheet() {
   const [isLoading, setIsLoading] = useState(false);
-  const [clients, setClients] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [message, setMessage] = useState('')
   const [visible, setVisible] = useState(false);
   const [editOrCreate, setEditOrCreate] = useState('');
-  const [client, setClient] = useState(null);
+  const [staff, setStaff] = useState(null);
 
   useEffect(() => {
-    fetchClients()
-    setClient(client)
-  }, [client]);
+    fetchStaff()
+  }, []);
 
-  const fetchClients = async () => {
+  const fetchStaff = async () => {
     setIsLoading(true)
     let { data, error } = await supabase
-      .from("clients")
+      .from("staff")
       .select(`
-        id, company, main_contact, main_contact_phone, main_contact_email
-      `)
-    //.order('id', { ascending: true })
-    setClients(data)
+        id, staff_name, phone, email, role, dob, start_date, address
+      `);
+
+    setStaff(data)
     console.log(data)
     if (error) console.log("error", error);
     setIsLoading(false);
@@ -36,12 +30,12 @@ export default function Timesheet() {
 
   const onOpen = () => {
     setVisible(true)
-    setClient(null);
+    setStaff(null);
   }
   const onEditOpen = (record) => {
     setEditOrCreate('Edit');
     setVisible(true);
-    setClient(record);
+    setStaff(record);
   }
 
   const columns = [
@@ -51,22 +45,22 @@ export default function Timesheet() {
       width: "5%"
     },
     {
-      title: "Company",
-      dataIndex: "company",
+      title: "Name",
+      dataIndex: "staff_name",
       width: "20%"
     },
     {
-      title: "Main Contact",
-      dataIndex: "main_contact",
+      title: "Role",
+      dataIndex: "role",
     },
     {
-      title: "Main Contact",
-      dataIndex: "main_contact_phone",
+      title: "Phone",
+      dataIndex: "phone",
       width: "20%"
     },
     {
-      title: "Main Contact",
-      dataIndex: "main_contact_email",
+      title: "Email",
+      dataIndex: "email",
       width: "20%"
     },
     {
@@ -88,28 +82,26 @@ export default function Timesheet() {
 
   return (
     <div>
-      {message && <Alert type="success" message={message} />}
       <div className="flex justify-items-end" style={{ marginBottom: 16 }}>
-
         <Button type="primary" onClick={onOpen}>
-          Create Client
+          Create Staff
         </Button>
       </div>
       <Table
         pagination={{ pageSize: 50 }}
         size={"small"}
         columns={columns}
-        dataSource={clients}
+        dataSource={staff}
         loading={isLoading}
         rowKey="id"
       />
-      <Drawer
+      {/* <Drawer
         visible={visible}
         editOrCreate={editOrCreate}
         setVisible={setVisible}
-        client={client}
-        setClient={setClient}
-      />
+        staff={staff}
+        setStaff={setStaff}
+      /> */}
     </div>
   );
 };

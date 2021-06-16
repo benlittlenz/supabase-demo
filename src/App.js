@@ -13,6 +13,7 @@ import DefaultLayout from './components/Layout'
 import Clients from './components/Clients'
 import Jobs from './components/Jobs'
 import Timesheet from './components/Timesheet'
+import Staff from './components/Staff'
 //import DrawerForm from './components/Table'
 
 function App() {
@@ -44,8 +45,8 @@ function App() {
                   <Route path="/jobs">
                     <Jobs />
                   </Route>
-                  <Route path="/users">
-                    <Timesheet />
+                  <Route path="/staff">
+                    <Staff />
                   </Route>
                   <Route path="/">
                     <Clients />
