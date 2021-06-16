@@ -3,6 +3,7 @@ import { supabase } from "./lib/api";
 
 import Auth from './components/Auth'
 //import Home from './components/Home'
+import DefaultLayout from './components/Layout'
 import Clients from './components/Clients'
 //import DrawerForm from './components/Table'
 
@@ -27,8 +28,8 @@ function App() {
     }, [user]);
 
     return (
-        <div className="w-5/6 mx-auto">
-            {!user ? <Auth /> : <Clients />}
+        <div className="">
+            {!user ? <Auth /> : <DefaultLayout><Clients /> </DefaultLayout>}
         </div>
     );
 }

@@ -3,33 +3,34 @@ import { Table, Button, Typography } from "antd";
 import { supabase } from "../lib/api";
 import "antd/dist/antd.css";
 
-import Drawer from './Forms/Client/Drawer';
+import Drawer from './Forms/Job/Drawer';
 import Alert from './Alert';
 
 export default function Timesheet() {
   const [isLoading, setIsLoading] = useState(false);
-  const [clients, setClients] = useState([]);
+  const [jobs, setJobs] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [showDrawer, setShowDrawer] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [message, setMessage] = useState('')
   const [visible, setVisible] = useState(false);
   const [editOrCreate, setEditOrCreate] = useState('');
-  const [client, setClient] = useState(null);
+  const [timesheet, setTimesheet] = useState(null);
 
   useEffect(() => {
-    fetchTimesheets()
+    fetchJobs()
   }, []);
 
-  const fetchTimesheets = async () => {
+  const fetchJobs = async () => {
     setIsLoading(true)
     let { data, error } = await supabase
-      .from("clients")
+      .from("jobs")
       .select(`
-        id, company, main_contact, main_contact_phone, main_contact_email
+              id, job_name, site_address, start_date, finish_date,
+              clients (id, company)
       `)
     //.order('id', { ascending: true })
-    setClients(data)
+    setJobs(data)
     console.log(data)
     if (error) console.log("error", error);
     setIsLoading(false);
@@ -62,7 +63,7 @@ export default function Timesheet() {
   const onEditOpen = (record) => {
     setEditOrCreate('Edit');
     setVisible(true);
-    setClient(record);
+    setTimesheet(record);
   }
 
   const columns = [
@@ -73,21 +74,26 @@ export default function Timesheet() {
     },
     {
       title: "Company",
-      dataIndex: "company",
+      dataIndex: "job_name",
       width: "20%"
     },
     {
       title: "Main Contact",
-      dataIndex: "main_contact",
+      dataIndex: "site_address",
     },
     {
       title: "Main Contact",
-      dataIndex: "main_contact_phone",
+      dataIndex: "start_date",
       width: "20%"
     },
     {
       title: "Main Contact",
-      dataIndex: "main_contact_email",
+      dataIndex: "finish_date",
+      width: "20%"
+    },
+    {
+      title: "Main Contact",
+      dataIndex: ["clients", 'company'],
       width: "20%"
     },
     {
@@ -117,10 +123,11 @@ export default function Timesheet() {
         </Button>
       </div>
       <Table
+        rowSelection={rowSelection}
         pagination={{ pageSize: 50 }}
         size={"small"}
         columns={columns}
-        dataSource={clients}
+        dataSource={jobs}
         loading={isLoading}
         rowKey="id"
       />
@@ -128,9 +135,11 @@ export default function Timesheet() {
         visible={visible}
         editOrCreate={editOrCreate}
         setVisible={setVisible}
-        client={client}
-        setClient={setClient}
+        timesheet={timesheet}
+        setTimesheet={setTimesheet}
       />
     </div>
+
+
   );
 };
