@@ -5,8 +5,6 @@ import { Drawer, Form, Button, Col, Row, Input, Select, Typography } from 'antd'
 import { PlusOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 
-const { Option } = Select;
-
 export default function DrawerForm({ visible, editOrCreate, setVisible, client = null, setClient }) {
   const [form] = Form.useForm();
 
@@ -24,20 +22,24 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
     setVisible(false)
   };
 
-  const onSubmit = async (data) => {
-    console.log("DATA: ", data)
-    // const { data, error } = await supabase
-    //   .from('client')
-    //   .insert([
-    //     {
-    //       user_id: user,
-    //       started_at: start,
-    //       stopped_at: finish,
-    //       total_hours: 4,
-    //     }
-    //   ])
-    // console.log(data)
-    // console.log(error)
+  const onSubmit = async ({
+    company,
+    main_contact,
+    main_contact_phone,
+    main_contact_email
+  }) => {
+    const { data, error } = await supabase
+      .from('clients')
+      .insert([
+        {
+          company,
+          main_contact,
+          main_contact_phone,
+          main_contact_email,
+        }
+      ])
+    console.log(data)
+    console.log(error)
   }
 
   return (
@@ -57,13 +59,13 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
             <Button onClick={onClose} style={{ marginRight: 8 }}>
               Cancel
               </Button>
-            <Button type="primary" htmlType="submit">
+            <Button form="clientForm" type="primary" htmlType="submit">
               Submit
             </Button>
           </div>
         }
       >
-        <Form layout="vertical" form={form} onFinish={onSubmit}>
+        <Form id="clientForm" layout="vertical" form={form} onFinish={onSubmit}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
@@ -81,7 +83,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
           <Row gutter={16}>
             <Col span={12}>
             <Form.Item
-                name="main_contact"
+                name="main_contact_phone"
                 label="Contact Name"
                 rules={[{ required: true, message: 'Please enter a main contact' }]}
               >
@@ -100,7 +102,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
           <Row gutter={16}>
             <Col span={12}>
             <Form.Item
-                name="main_email"
+                name="main_contact_email"
                 label="Contact Email"
               >
                 <Input placeholder="Contact email" />
