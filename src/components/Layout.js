@@ -8,6 +8,8 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 
+import { Link } from "react-router-dom";
+
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -17,9 +19,13 @@ export default function DefaultLayout({ children }) {
       <Sider theme="light">
         <div className="logo" />
         <Menu theme="light" defaultSelectedKeys={['1']} mode="inline">
+
           <Menu.Item key="1" icon={<UserOutlined />}>
-            Jobs
-            </Menu.Item>
+            <Link to="/jobs">
+              Jobs
+            </Link>
+          </Menu.Item>
+
           <Menu.Item key="2" icon={<DesktopOutlined />}>
             Clients
             </Menu.Item>

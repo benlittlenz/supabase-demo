@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { supabase } from "../../../lib/api";
 
-import { Drawer, Form, Button, Col, Row, Input, Select, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Drawer, Form, Button, Col, Row, Input, Select, Typography, notification } from 'antd';
+import { PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
+
 const { Title } = Typography;
 
 export default function DrawerForm({ visible, editOrCreate, setVisible, client = null, setClient }) {
   const [form] = Form.useForm();
-  //const [data, setData] = useState([])
+  const formRef = useRef(null);
 
-  // useEffect(() => {
-  //   console.log("Effect: ", client)
-  //   if (client) setData(client);
-  // }, [client])
+  React.useEffect(() => {
+    form.setFieldsValue({
+      company: client && client?.company ? client.company : '',
+      main_contact: client && client?.main_contact ? client.main_contact : '',
+      main_contact_phone: client && client?.main_contact_phone ? client.main_contact_phone : '',
+      main_contact_email: client && client?.main_contact_email ? client.main_contact_email : '',
+    });
+  }, [client]);
 
   const onClose = () => {
     setClient(null);
     setVisible(false);
-    console.log("CLIENT: ", client)
   };
 
   const onSubmit = async ({
@@ -26,6 +30,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
     main_contact_phone,
     main_contact_email
   }) => {
+    if(editOrCreate !== 'edit') {
     const { data, error } = await supabase
       .from('clients')
       .insert([
@@ -36,8 +41,28 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
           main_contact_email,
         }
       ])
-    console.log(data)
-    console.log(error)
+
+      console.log(data)
+    } else {
+      const { data, error } = await supabase
+        .from('clients')
+        .update({
+          company,
+          main_contact,
+          main_contact_phone,
+          main_contact_email,
+         })
+        .match({ id: client })
+    }
+    // console.log(data)
+    // console.log(error)
+
+    notification.open({
+      message: 'Success!',
+      description:
+        `Client Successfully ${editOrCreate !== 'edit' ? 'Created' : 'Updated'}.`,
+      icon: <CheckCircleOutlined style={{ color: '#38c172' }}/>,
+    });
   }
   console.log("CLIENT: ", client)
   return (
@@ -63,7 +88,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
           </div>
         }
       >
-        <Form id="clientForm" layout="vertical" form={form} onFinish={onSubmit}>
+        <Form id="clientForm" layout="vertical" form={form} ref={formRef} onFinish={onSubmit}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
@@ -71,7 +96,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 label="Company"
                 rules={[{ required: true, message: 'Please enter a company name' }]}
               >
-                <Input defaultValue={client?.company ? client.company : ''} placeholder="Company name" />
+                <Input placeholder="Company name" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -85,7 +110,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 label="Contact Name"
                 rules={[{ required: true, message: 'Please enter a main contact' }]}
               >
-                <Input defaultValue={client?.main_contact_phone ? client.company : ''} placeholder="Contact Name" />
+                <Input placeholder="Contact Name" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -93,7 +118,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 name="main_contact_phone"
                 label="Contact Phone"
               >
-                <Input defaultValue={client?.main_contact_phone ? client?.main_contact_phone : ''} placeholder="Contact #" />
+                <Input placeholder="Contact #" />
               </Form.Item>
             </Col>
           </Row>
@@ -103,7 +128,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 name="main_contact_email"
                 label="Contact Email"
               >
-                <Input defaultValue={client?.main_contact_email ? client?.main_contact_email : ''} placeholder="Contact email" />
+                <Input placeholder="Contact email" />
               </Form.Item>
             </Col>
           </Row>
