@@ -10,18 +10,17 @@ export default function Timesheet() {
   const [isLoading, setIsLoading] = useState(false);
   const [clients, setClients] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [isApproving, setIsApproving] = useState(false);
   const [message, setMessage] = useState('')
   const [visible, setVisible] = useState(false);
   const [editOrCreate, setEditOrCreate] = useState('');
   const [client, setClient] = useState(null);
 
   useEffect(() => {
-    fetchTimesheets()
-  }, []);
+    fetchClients()
+    setClient(client)
+  }, [client]);
 
-  const fetchTimesheets = async () => {
+  const fetchClients = async () => {
     setIsLoading(true)
     let { data, error } = await supabase
       .from("clients")
@@ -35,30 +34,26 @@ export default function Timesheet() {
     setIsLoading(false);
   };
 
-  const rowSelection = {
-    onChange: rows => {
-      console.log("ROWS: ", rows)
-      setSelectedRows(rows)
-    },
-  };
+  // const updateRecords = async () => {
+  //   console.time('update')
+  //   setIsApproving(true)
+  //   for (let i = 0; i < selectedRows.length; i++) {
+  //     console.log(i)
+  //     const { data, error } = await supabase
+  //       .from('timesheets')
+  //       .update({ approved: 'Yes' })
+  //       .match({ id: selectedRows[i] })
+  //   }
+  //   console.timeEnd('update')
+  //   setIsApproving(false);
 
-  const updateRecords = async () => {
-    console.time('update')
-    setIsApproving(true)
-    for (let i = 0; i < selectedRows.length; i++) {
-      console.log(i)
-      const { data, error } = await supabase
-        .from('timesheets')
-        .update({ approved: 'Yes' })
-        .match({ id: selectedRows[i] })
-    }
-    console.timeEnd('update')
-    setIsApproving(false);
+  //   setMessage(`Finished approving ${selectedRows.length} records`)
+  // }
 
-    setMessage(`Finished approving ${selectedRows.length} records`)
+  const onOpen = () => {
+    setVisible(true)
+    setClient(null);
   }
-
-  const onOpen = () => setVisible(true)
   const onEditOpen = (record) => {
     setEditOrCreate('Edit');
     setVisible(true);

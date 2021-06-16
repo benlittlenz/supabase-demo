@@ -7,19 +7,17 @@ const { Title } = Typography;
 
 export default function DrawerForm({ visible, editOrCreate, setVisible, client = null, setClient }) {
   const [form] = Form.useForm();
+  //const [data, setData] = useState([])
 
-  const [user, setUser] = useState(null);
-  const [start, setStart] = useState(null);
-  const [finish, setFinish] = useState(null);
-  const [data, setData] = useState([])
-
-  useEffect(() => {
-    console.log("Effect: ", client)
-    if (client) setData(client);
-  }, [client])
+  // useEffect(() => {
+  //   console.log("Effect: ", client)
+  //   if (client) setData(client);
+  // }, [client])
 
   const onClose = () => {
-    setVisible(false)
+    setClient(null);
+    setVisible(false);
+    console.log("CLIENT: ", client)
   };
 
   const onSubmit = async ({
@@ -41,11 +39,11 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
     console.log(data)
     console.log(error)
   }
-
+  console.log("CLIENT: ", client)
   return (
     <>
       <Drawer
-        title={'Create Client'}
+        title={`${client ? 'Update' : 'Create'} Client`}
         width={720}
         onClose={onClose}
         visible={visible}
@@ -73,7 +71,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 label="Company"
                 rules={[{ required: true, message: 'Please enter a company name' }]}
               >
-                <Input placeholder="Company name" />
+                <Input defaultValue={client?.company ? client.company : ''} placeholder="Company name" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -87,15 +85,15 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 label="Contact Name"
                 rules={[{ required: true, message: 'Please enter a main contact' }]}
               >
-                <Input placeholder="Contact Name" />
+                <Input defaultValue={client?.main_contact_phone ? client.company : ''} placeholder="Contact Name" />
               </Form.Item>
             </Col>
             <Col span={12}>
             <Form.Item
-                name="contact_phone"
+                name="main_contact_phone"
                 label="Contact Phone"
               >
-                <Input placeholder="Contact #" />
+                <Input defaultValue={client?.main_contact_phone ? client?.main_contact_phone : ''} placeholder="Contact #" />
               </Form.Item>
             </Col>
           </Row>
@@ -105,7 +103,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
                 name="main_contact_email"
                 label="Contact Email"
               >
-                <Input placeholder="Contact email" />
+                <Input defaultValue={client?.main_contact_email ? client?.main_contact_email : ''} placeholder="Contact email" />
               </Form.Item>
             </Col>
           </Row>
