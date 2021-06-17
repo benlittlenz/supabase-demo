@@ -1,72 +1,83 @@
 import React, { useRef } from 'react';
 import { supabase } from "../../../lib/api";
 
-import { Drawer, Form, Button, Col, Row, Input, Select, Typography, notification } from 'antd';
-import { PlusOutlined, CheckCircleOutlined } from '@ant-design/icons';
-
+import { Drawer, Form, Button, Col, Row, Input, DatePicker, Typography, notification } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 
-export default function DrawerForm({ visible, editOrCreate, setVisible, client = null, setClient }) {
+export default function DrawerForm({ visible, editOrCreate, setVisible, staff = null, setStaff }) {
   const [form] = Form.useForm();
   const formRef = useRef(null);
 
   React.useEffect(() => {
     form.setFieldsValue({
-      company: client && client?.company ? client.company : '',
-      main_contact: client && client?.main_contact ? client.main_contact : '',
-      main_contact_phone: client && client?.main_contact_phone ? client.main_contact_phone : '',
-      main_contact_email: client && client?.main_contact_email ? client.main_contact_email : '',
+      staff_name: staff && staff?.staff_name ? staff.staff_name : '',
+      phone: staff && staff?.phone ? staff.phone : '',
+      email: staff && staff?.email ? staff.email : '',
+      role: staff && staff?.role ? staff.role : '',
+      dob: staff && staff?.dob ? staff.dob : '',
+      start_date: staff && staff?.start_date ? staff.start_date : '',
+      address: staff && staff?.address ? staff.address : '',
     });
-  }, [client]);
+  }, [staff]);
 
   const onClose = () => {
-    setClient(null);
+    setStaff(null);
     setVisible(false);
   };
 
   const onSubmit = async ({
-    company,
-    main_contact,
-    main_contact_phone,
-    main_contact_email
+    staff_name,
+    phone,
+    email,
+    role,
+    dob,
+    start_date,
+    address
   }) => {
-    if(editOrCreate !== 'edit') {
-    const { data, error } = await supabase
-      .from('clients')
-      .insert([
-        {
-          company,
-          main_contact,
-          main_contact_phone,
-          main_contact_email,
-        }
-      ])
+    if (editOrCreate !== 'edit') {
+      const { data, error } = await supabase
+        .from('staff')
+        .insert([
+          {
+            staff_name,
+            phone,
+            email,
+            role,
+            dob,
+            start_date,
+            address
+          }
+        ])
 
       console.log(data)
     } else {
       const { data, error } = await supabase
-        .from('clients')
+        .from('staff')
         .update({
-          company,
-          main_contact,
-          main_contact_phone,
-          main_contact_email,
+          staff_name,
+          phone,
+          email,
+          role,
+          dob,
+          start_date,
+          address
         })
-        .match({ id: client })
+        .match({ id: staff.id })
     }
 
     notification.open({
       message: 'Success!',
       description:
-        `Client Successfully ${editOrCreate !== 'edit' ? 'Created' : 'Updated'}.`,
-      icon: <CheckCircleOutlined style={{ color: '#38c172' }}/>,
+        `Staff Successfully ${editOrCreate !== 'edit' ? 'Created' : 'Updated'}.`,
+      icon: <CheckCircleOutlined style={{ color: '#38c172' }} />,
     });
   }
-  console.log("CLIENT: ", client)
+  console.log("staff: ", staff)
   return (
     <>
       <Drawer
-        title={`${client ? 'Update' : 'Create'} Client`}
+        title={`${staff ? 'Update' : 'Create'} Staff`}
         width={720}
         onClose={onClose}
         visible={visible}
@@ -80,40 +91,26 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
             <Button onClick={onClose} style={{ marginRight: 8 }}>
               Cancel
               </Button>
-            <Button form="clientForm" type="primary" htmlType="submit">
+            <Button form="staffForm" type="primary" htmlType="submit">
               Submit
             </Button>
           </div>
         }
       >
-        <Form id="clientForm" layout="vertical" form={form} ref={formRef} onFinish={onSubmit}>
+        <Form id="staffForm" layout="vertical" form={form} ref={formRef} onFinish={onSubmit}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="company"
-                label="Company"
-                rules={[{ required: true, message: 'Please enter a company name' }]}
+                name="staff_name"
+                label="Staff Name"
+                rules={[{ required: true, message: 'Please enter a staff name' }]}
               >
-                <Input placeholder="Company name" />
+                <Input placeholder="Staff Name" />
               </Form.Item>
             </Col>
             <Col span={12}>
-            </Col>
-          </Row>
-          <Title level={3}>Main Contact</Title>
-          <Row gutter={16}>
-            <Col span={12}>
-            <Form.Item
-                name="main_contact_phone"
-                label="Contact Name"
-                rules={[{ required: true, message: 'Please enter a main contact' }]}
-              >
-                <Input placeholder="Contact Name" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-            <Form.Item
-                name="main_contact_phone"
+              <Form.Item
+                name="phone"
                 label="Contact Phone"
               >
                 <Input placeholder="Contact #" />
@@ -122,11 +119,48 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-            <Form.Item
-                name="main_contact_email"
+              <Form.Item
+                name="email"
                 label="Contact Email"
               >
                 <Input placeholder="Contact email" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="role"
+                label="Position"
+              >
+                <Input placeholder="Position" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="address"
+                label="Address"
+              >
+                <Input placeholder="Address" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="dob"
+                label="Date of Birth"
+
+              >
+                <DatePicker format="DD/MM/YYYY" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="start_date"
+                label="Start Date"
+              >
+                <DatePicker format="DD/MM/YYYY" />
               </Form.Item>
             </Col>
           </Row>

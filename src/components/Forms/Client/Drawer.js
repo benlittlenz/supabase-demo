@@ -52,7 +52,7 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, client =
           main_contact_phone,
           main_contact_email,
         })
-        .match({ id: client })
+        .match({ id: client.id })
     }
 
     notification.open({

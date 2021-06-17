@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Typography } from "antd";
 import { supabase } from "../lib/api";
-import "antd/dist/antd.css";
+import "antd/dist/antd.css"
+
+import Drawer from './Forms/Staff/Drawer'
 
 
 export default function Timesheet() {
@@ -95,13 +97,13 @@ export default function Timesheet() {
         loading={isLoading}
         rowKey="id"
       />
-      {/* <Drawer
+      <Drawer
         visible={visible}
         editOrCreate={editOrCreate}
         setVisible={setVisible}
         staff={staff}
         setStaff={setStaff}
-      /> */}
+      />
     </div>
   );
 };
