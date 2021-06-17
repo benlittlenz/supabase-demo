@@ -6,10 +6,11 @@ import "antd/dist/antd.css"
 import Drawer from './Forms/Staff/Drawer'
 
 
-export default function Timesheet() {
+export default function Staff() {
   const [isLoading, setIsLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [editOrCreate, setEditOrCreate] = useState('');
+  const [staffList, setStaffList] = useState(null);
   const [staff, setStaff] = useState(null);
 
   useEffect(() => {
@@ -23,8 +24,7 @@ export default function Timesheet() {
       .select(`
         id, staff_name, phone, email, role, dob, start_date, address
       `);
-
-    setStaff(data)
+    setStaffList(data)
     console.log(data)
     if (error) console.log("error", error);
     setIsLoading(false);
@@ -35,6 +35,7 @@ export default function Timesheet() {
     setStaff(null);
   }
   const onEditOpen = (record) => {
+    console.log("RECORD: ", record)
     setEditOrCreate('Edit');
     setVisible(true);
     setStaff(record);
@@ -93,7 +94,7 @@ export default function Timesheet() {
         pagination={{ pageSize: 50 }}
         size={"small"}
         columns={columns}
-        dataSource={staff}
+        dataSource={staffList}
         loading={isLoading}
         rowKey="id"
       />

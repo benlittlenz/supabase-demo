@@ -1,9 +1,14 @@
 import React, { useRef } from 'react';
 import { supabase } from "../../../lib/api";
+import moment from 'moment';
 
 import { Drawer, Form, Button, Col, Row, Input, DatePicker, Typography, notification } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 const { Title } = Typography;
+
+const formatDate = date => {
+  return date ? moment(date) : ''
+}
 
 export default function DrawerForm({ visible, editOrCreate, setVisible, staff = null, setStaff }) {
   const [form] = Form.useForm();
@@ -15,8 +20,8 @@ export default function DrawerForm({ visible, editOrCreate, setVisible, staff = 
       phone: staff && staff?.phone ? staff.phone : '',
       email: staff && staff?.email ? staff.email : '',
       role: staff && staff?.role ? staff.role : '',
-      dob: staff && staff?.dob ? staff.dob : '',
-      start_date: staff && staff?.start_date ? staff.start_date : '',
+      dob: staff && staff?.dob ? formatDate(staff.dob) : '',
+      start_date: staff && staff?.start_date ? formatDate(staff.start_date) : '',
       address: staff && staff?.address ? staff.address : '',
     });
   }, [staff]);
